@@ -1,0 +1,52 @@
+﻿@page "/namesprediction"
+@inject HttpClient Http
+@using PredictName
+
+<PageTitle>Predict Name</PageTitle>
+
+<h1>Predict Nationaility of the Name</h1>
+<div>
+    <input type="text" placeholder="Enter Name" @bind="NameIn"/>
+    <button @onclick="GetPrediction">Enter</button>
+</div>
+
+
+@if (prediction == null)
+{
+    <p><h1>Try refreshing the page after a couple of moments</h1></p>
+    <p><em>Loading...</em></p>
+}
+else
+{
+        <h2 id="name" >@prediction.Name.ToUpper()</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Countries</th>
+                <th>Probability</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var country in prediction.Country)
+            {
+                <tr>
+                    <td>@country.Country_Id</td>
+                    <td>@country.Probability %</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public string? NameIn { get; set; }
+    public Boolean retrivedData { get; set; }
+    private Prediction? prediction;
+
+    protected async Task GetPrediction()
+    {
+        prediction = await Http.GetFromJsonAsync<Prediction>($"https://api.nationalize.io/?name={NameIn}");
+    }
+
+
+}
