@@ -3,50 +3,160 @@
 @using PredictName
 
 <PageTitle>Predict Name</PageTitle>
-
-<h1>Predict Nationaility of the Name</h1>
-<div>
+<h1 class="text-center bg-info">Predict Nationaility of the Name</h1>
+<div class="text-center bg-info m-2 p-2">
+  <h3 class="text-center">Select single name or bulk names to predict?</h3>
+    <button class="btn btn-primary mx-2" @onclick=@( o => Option = "single" )>Single Name</button>
+    <button class="btn btn-primary mx-2" @onclick=@( o => Option = "bulk" )>Bulk Names</button>
+    <button class="btn btn-warning mx-2" @onclick="Clear">Clear</button>
+</div>
+@if (Option == "single")
+{
+    <div class="m-2 text-center">
     <input type="text" placeholder="Enter Name" @bind="NameIn"/>
     <button @onclick="GetPrediction">Enter</button>
-</div>
+    </div>
 
-
-@if (prediction == null)
+    @if (prediction == null)
+    {
+                    <h4 class="text-center m-2">Enter in a Name</h4>
+    }
+    else
+    {
+                    <h2 class="text-center" id="name" >@prediction.Name.ToUpper()</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Countries</th>
+                        <th>Probability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var country in prediction.Country)
+                {
+                            <tr>
+                                <td>@country.Country_Id</td>
+                                <td>@country.Probability %</td>
+                            </tr>
+                }
+                </tbody>
+            </table>
+    }
+}
+else if (Option == "bulk")
 {
-    <p><h1>Try refreshing the page after a couple of moments</h1></p>
-    <p><em>Loading...</em></p>
+    <div class=border m-2 style="height:250px">
+        <h3 class="text-center m-1">Entered Names</h3>
+    @foreach (var name in BulkNames) {
+        <h4 class="d-inline-block mx-3">@name</h4>
+    }
+    </div>
+
+    <div>
+        @if (BulkNames.Count != 10)
+        {
+            <div class="text-center">
+            <input type="text" placeholder="Enter Name" @bind="NameIn"/>
+            <button class="btn btn-success mx-1" @onclick="AddName">Add</button>
+            </div>
+        }
+        else
+        {
+        <h4 class="text-center">Maximum reached: 10 names</h4>
+        }
+    </div>
+
+    <div class="text-right">
+            <button class="btn btn-primary mx-1" @onclick="GetBulkPredictions">Get Predictions</button>
+    </div>
+
+    @if (bulkpredictons == null)
+    {
+        <h4 class="text-center">Enter in Names</h4>
+    }
+    else
+    {
+        @foreach (var prediction in bulkpredictons)
+        {
+            <h2 class="text-center" id="name" >@prediction.Name.ToUpper()</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Countries</th>
+                        <th>Probability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var country in prediction.Country)
+                    {
+                        <tr>
+                            <td>@country.Country_Id</td>
+                            <td>@country.Probability %</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+
 }
 else
 {
-        <h2 id="name" >@prediction.Name.ToUpper()</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Countries</th>
-                <th>Probability</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var country in prediction.Country)
-            {
-                <tr>
-                    <td>@country.Country_Id</td>
-                    <td>@country.Probability %</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <p class="text-center"><h1>Select an option</h1></p>
 }
+
 
 @code {
     public string? NameIn { get; set; }
-    public Boolean retrivedData { get; set; }
+    public string? Option {get; set;}
     private Prediction? prediction;
+    private Prediction[]? bulkpredictons;
+    private List<string>? BulkNames = new(10);
 
     protected async Task GetPrediction()
     {
-        prediction = await Http.GetFromJsonAsync<Prediction>($"https://api.nationalize.io/?name={NameIn}");
+        try
+        {
+            prediction = await Http.GetFromJsonAsync<Prediction>($"https://api.nationalize.io/?name={NameIn}");
+        }
+        catch
+        {
+            throw new ArgumentException("A name has to be entered");
+        }
     }
 
+    protected async Task GetBulkPredictions()
+    {   try 
+        {
+            string filter = "";
+            foreach (var name in BulkNames) {
+                filter += $"name[]={name}&";
+            }
+            filter = filter.Remove(filter.Length - 1);
+            bulkpredictons = await Http.GetFromJsonAsync<Prediction[]>($"https://api.nationalize.io/?{filter}");
+        }
+        catch {
+            throw new ArgumentException("There has to be atleast one name entered");
+        }
+    }
 
+    protected void AddName() {
+        if (BulkNames.FirstOrDefault(b => b.ToUpper() == NameIn.ToUpper()) == null)
+        {
+            BulkNames.Add(NameIn);
+        }
+        else
+        {
+            throw new ArgumentException("Name is already entered: " + NameIn);
+        }
+        NameIn = null;
+    }
+
+    protected void Clear() {
+        Option = null;
+        BulkNames = new();
+        NameIn = null;
+        bulkpredictons = new Prediction[0];
+        prediction = null;
+    }
 }
