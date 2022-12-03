@@ -2,7 +2,7 @@
 {
     public class Country
     {
-        private string country_id;
+        private string? country_id;
         private float probability;
         public string? Country_Id
         {
@@ -286,7 +286,7 @@
 
             if (countries.FirstOrDefault(c => c.Id.ToUpper() == id.ToUpper()) != null)
             {
-                return countries.Where(c => c.Id == id).FirstOrDefault().Country;
+                return countries.FirstOrDefault(c => c.Id == id).Country;
             }
             else
             {
