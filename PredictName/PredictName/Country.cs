@@ -286,7 +286,7 @@
 
             if (countries.FirstOrDefault(c => c.Id.ToUpper() == id.ToUpper()) != null)
             {
-                return countries.FirstOrDefault(c => c.Id == id).Country;
+                return countries.Where(c => c.Id == id).FirstOrDefault().Country;
             }
             else
             {
