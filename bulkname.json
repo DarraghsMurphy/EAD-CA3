@@ -1,0 +1,77 @@
+[
+  {
+    "country": [
+      {
+        "country_id": "AT",
+        "probability": 0.064
+      },
+      {
+        "country_id": "DE",
+        "probability": 0.059
+      },
+      {
+        "country_id": "DK",
+        "probability": 0.058
+      },
+      {
+        "country_id": "IE",
+        "probability": 0.051
+      },
+      {
+        "country_id": "AU",
+        "probability": 0.047
+      }
+    ],
+    "name": "michael"
+  },
+  {
+    "country": [
+      {
+        "country_id": "AU",
+        "probability": 0.139
+      },
+      {
+        "country_id": "GB",
+        "probability": 0.121
+      },
+      {
+        "country_id": "US",
+        "probability": 0.103
+      },
+      {
+        "country_id": "NZ",
+        "probability": 0.087
+      },
+      {
+        "country_id": "CA",
+        "probability": 0.072
+      }
+    ],
+    "name": "matthew"
+  },
+  {
+    "country": [
+      {
+        "country_id": "KE",
+        "probability": 0.104
+      },
+      {
+        "country_id": "GB",
+        "probability": 0.07
+      },
+      {
+        "country_id": "NZ",
+        "probability": 0.058
+      },
+      {
+        "country_id": "DK",
+        "probability": 0.056
+      },
+      {
+        "country_id": "AU",
+        "probability": 0.051
+      }
+    ],
+    "name": "jane"
+  }
+]
